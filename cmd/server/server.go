@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/danilobandeira29/grpc/pb"
+	"github.com/danilobandeira29/grpc/services"
 	"log"
 	"net"
 
@@ -13,6 +15,7 @@ func main() {
 		log.Fatalf("Could not listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
+	pb.RegisterUserServiceServer(grpcServer, services.NewUserService()) // registrando o service AddUser
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Could not start server: %v", err)
 	}
