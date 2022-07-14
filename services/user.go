@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"github.com/danilobandeira29/grpc/pb"
-	"math/rand"
 )
 
 type UserService struct {
@@ -17,7 +16,7 @@ func NewUserService() *UserService {
 
 func (*UserService) AddUser(ctx context.Context, req *pb.User) (*pb.User, error) {
 	return &pb.User{
-		Id:    string(rand.Intn(100)),
+		Id:    req.GetId(),
 		Name:  req.GetName(),
 		Email: req.GetEmail(),
 	}, nil

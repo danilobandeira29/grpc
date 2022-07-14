@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/danilobandeira29/grpc/pb"
 	"github.com/danilobandeira29/grpc/services"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 
@@ -16,6 +17,7 @@ func main() {
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterUserServiceServer(grpcServer, services.NewUserService()) // registrando o service AddUser
+	reflection.Register(grpcServer)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Could not start server: %v", err)
 	}
