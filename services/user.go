@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"github.com/danilobandeira29/grpc/pb"
+	"time"
 )
 
 type UserService struct {
@@ -20,4 +21,26 @@ func (*UserService) AddUser(ctx context.Context, req *pb.User) (*pb.User, error)
 		Name:  req.GetName(),
 		Email: req.GetEmail(),
 	}, nil
+}
+
+func (*UserService) AddUserVerbose(ctx context.Context, req *pb.User, stream pb.UserService_AddUserVerboseServer) error {
+	stream.Send(&pb.UserStream{
+		Status: "Init",
+		User:   &pb.User{},
+	})
+	time.Sleep(time.Second * 3)
+	stream.Send(&pb.UserStream{
+		Status: "User inserted",
+		User:   &pb.User{},
+	})
+	time.Sleep(time.Second * 3)
+	stream.Send(&pb.UserStream{
+		Status: "Completed",
+		User: &pb.User{
+			Id:    "1",
+			Name:  req.GetName(),
+			Email: req.GetEmail(),
+		},
+	})
+	return nil
 }
