@@ -59,7 +59,7 @@ func (c *userServiceClient) AddUserVerbose(ctx context.Context, in *User, opts .
 }
 
 type UserService_AddUserVerboseClient interface {
-	Recv() (*UserStream, error)
+	Recv() (*UserResultStream, error)
 	grpc.ClientStream
 }
 
@@ -67,8 +67,8 @@ type userServiceAddUserVerboseClient struct {
 	grpc.ClientStream
 }
 
-func (x *userServiceAddUserVerboseClient) Recv() (*UserStream, error) {
-	m := new(UserStream)
+func (x *userServiceAddUserVerboseClient) Recv() (*UserResultStream, error) {
+	m := new(UserResultStream)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func _UserService_AddUserVerbose_Handler(srv interface{}, stream grpc.ServerStre
 }
 
 type UserService_AddUserVerboseServer interface {
-	Send(*UserStream) error
+	Send(*UserResultStream) error
 	grpc.ServerStream
 }
 
@@ -142,7 +142,7 @@ type userServiceAddUserVerboseServer struct {
 	grpc.ServerStream
 }
 
-func (x *userServiceAddUserVerboseServer) Send(m *UserStream) error {
+func (x *userServiceAddUserVerboseServer) Send(m *UserResultStream) error {
 	return x.ServerStream.SendMsg(m)
 }
 
