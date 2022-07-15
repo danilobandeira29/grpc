@@ -6,6 +6,7 @@ import (
 	"github.com/danilobandeira29/grpc/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"io"
 	"log"
 )
 
@@ -16,7 +17,7 @@ func main() {
 	}
 	defer connection.Close()
 	client := pb.NewUserServiceClient(connection)
-	AddUser(client)
+	AddUserVerbose(client)
 }
 
 func AddUser(client pb.UserServiceClient) {
@@ -30,4 +31,26 @@ func AddUser(client pb.UserServiceClient) {
 		log.Fatalf("Could not make gRPC call AddUser: %v", err)
 	}
 	fmt.Println(res)
+}
+
+func AddUserVerbose(client pb.UserServiceClient) {
+	resStream, err := client.AddUserVerbose(context.Background(), &pb.User{
+		Id:    "1234",
+		Name:  "Danilo Bandeira",
+		Email: "danilobandeira29@gmail.com",
+	})
+	if err != nil {
+		log.Fatalf("Could not make gRPC call AddUserStream: %v", err)
+	}
+	for {
+		message, err := resStream.Recv()
+		if err == io.EOF {
+			fmt.Println("End!")
+			break
+		}
+		if err != nil {
+			log.Fatalf("Could not recive the stream: %v", err)
+		}
+		fmt.Printf("Status: %v\nUser: %v\n\n", message.Status, message.User)
+	}
 }
