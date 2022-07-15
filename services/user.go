@@ -24,17 +24,17 @@ func (*UserService) AddUser(ctx context.Context, req *pb.User) (*pb.User, error)
 }
 
 func (*UserService) AddUserVerbose(req *pb.User, stream pb.UserService_AddUserVerboseServer) error {
-	stream.Send(&pb.UserStream{
+	stream.Send(&pb.UserResultStream{
 		Status: "Init",
 		User:   &pb.User{},
 	})
 	time.Sleep(time.Second * 3)
-	stream.Send(&pb.UserStream{
+	stream.Send(&pb.UserResultStream{
 		Status: "User inserted",
 		User:   &pb.User{},
 	})
 	time.Sleep(time.Second * 3)
-	stream.Send(&pb.UserStream{
+	stream.Send(&pb.UserResultStream{
 		Status: "Completed",
 		User: &pb.User{
 			Id:    "1",
