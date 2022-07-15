@@ -23,7 +23,7 @@ func (*UserService) AddUser(ctx context.Context, req *pb.User) (*pb.User, error)
 	}, nil
 }
 
-func (*UserService) AddUserVerbose(ctx context.Context, req *pb.User, stream pb.UserService_AddUserVerboseServer) error {
+func (*UserService) AddUserVerbose(req *pb.User, stream pb.UserService_AddUserVerboseServer) error {
 	stream.Send(&pb.UserStream{
 		Status: "Init",
 		User:   &pb.User{},
