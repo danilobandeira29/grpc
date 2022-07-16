@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
 	"log"
+	"time"
 )
 
 func main() {
@@ -17,7 +18,7 @@ func main() {
 	}
 	defer connection.Close()
 	client := pb.NewUserServiceClient(connection)
-	AddUserVerbose(client)
+	AddUsers(client)
 }
 
 func AddUser(client pb.UserServiceClient) {
@@ -53,4 +54,41 @@ func AddUserVerbose(client pb.UserServiceClient) {
 		}
 		fmt.Printf("Status: %v\nUser: %v\n\n", message.Status, message.User)
 	}
+}
+
+func AddUsers(client pb.UserServiceClient) {
+	requests := []*pb.User{
+		&pb.User{
+			Id:    "1",
+			Name:  "Danilo Bandeira",
+			Email: "danilobandeira29@gmail.com",
+		},
+		&pb.User{
+			Id:    "2",
+			Name:  "Ana Banana",
+			Email: "ana@banana.com",
+		},
+		&pb.User{
+			Id:    "3",
+			Name:  "Maria de Fatima",
+			Email: "maria@fatima.com",
+		},
+	}
+	stream, err := client.AddUsers(context.Background())
+	if err != nil {
+		log.Fatalf("Could not send stream to AddUsers: %v", err)
+	}
+	for i, user := range requests {
+		stream.Send(user)
+		fmt.Println("Sending User", user.GetName())
+		if i == len(requests)-1 {
+			fmt.Println("End of Users")
+		}
+		time.Sleep(time.Second * 3)
+	}
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("Could not Close and Recv the response for AddUsers: %v", err)
+	}
+	log.Println("Result", res)
 }
