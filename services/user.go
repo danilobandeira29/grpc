@@ -53,7 +53,7 @@ func (*UserService) AddUsers(stream pb.UserService_AddUsersServer) error {
 		requestStream, err := stream.Recv()
 		if err == io.EOF {
 			return stream.SendAndClose(&pb.Users{
-				User: users,
+				Users: users,
 			})
 		}
 		if err != nil {

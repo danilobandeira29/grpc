@@ -14,7 +14,7 @@ message UserResultStream {
 }
 
 message Users {
-  repeated User user = 1;
+  repeated User users = 1;
 }
 
 service UserService {
