@@ -52,10 +52,9 @@ func (*UserService) AddUsers(stream pb.UserService_AddUsersServer) error {
 	for {
 		requestStream, err := stream.Recv()
 		if err == io.EOF {
-			stream.SendAndClose(&pb.Users{
+			return stream.SendAndClose(&pb.Users{
 				User: users,
 			})
-			return nil
 		}
 		if err != nil {
 			log.Fatalf("Could not recive the stream AddUsers: %v", err)
