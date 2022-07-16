@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"github.com/danilobandeira29/grpc/pb"
 	"io"
 	"log"
@@ -57,12 +58,13 @@ func (*UserService) AddUsers(stream pb.UserService_AddUsersServer) error {
 			})
 		}
 		if err != nil {
-			log.Fatalf("Could not recive the stream AddUsers: %v", err)
+			log.Fatalf("Could not recieve the stream AddUsers: %v", err)
 		}
 		users = append(users, &pb.User{
 			Id:    requestStream.GetId(),
 			Name:  requestStream.GetName(),
 			Email: requestStream.GetEmail(),
 		})
+		fmt.Println("Added User", requestStream.GetName())
 	}
 }
