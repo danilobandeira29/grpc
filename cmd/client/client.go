@@ -18,7 +18,7 @@ func main() {
 	}
 	defer connection.Close()
 	client := pb.NewUserServiceClient(connection)
-	AddUsers(client)
+	AddUserStreamBoth(client)
 }
 
 func AddUser(client pb.UserServiceClient) {
@@ -91,4 +91,55 @@ func AddUsers(client pb.UserServiceClient) {
 		log.Fatalf("Could not Close and Recv the response for AddUsers: %v", err)
 	}
 	log.Println("Result", res)
+}
+
+func AddUserStreamBoth(client pb.UserServiceClient) {
+	requestStream, err := client.AddUserStreamBoth(context.Background())
+	if err != nil {
+		log.Fatalf("Could not make gRPC call AddUserStreamBoth: %v", err)
+	}
+	requests := []*pb.User{
+		&pb.User{
+			Id:    "1",
+			Name:  "Danilo Bandeira",
+			Email: "danilobandeira29@gmail.com",
+		},
+		&pb.User{
+			Id:    "2",
+			Name:  "Ana Banana",
+			Email: "ana@banana.com",
+		},
+		&pb.User{
+			Id:    "3",
+			Name:  "Maria de Fatima",
+			Email: "maria@fatima.com",
+		},
+	}
+	wait := make(chan int)
+	go func() {
+		for _, user := range requests {
+			err := requestStream.Send(user)
+			if err != nil {
+				log.Fatalf("Could not Send gRPC call AddUserStreamBoth: %v", err)
+			}
+			fmt.Println("Sending user", user.GetName())
+			time.Sleep(time.Second * 3)
+		}
+		requestStream.CloseSend()
+	}()
+	go func() {
+		for {
+			response, err := requestStream.Recv()
+			if err == io.EOF {
+				fmt.Println("EOF")
+				break
+			}
+			if err != nil {
+				log.Fatalf("Could not receive stream AddUserStreamBoth: %v", err)
+			}
+			fmt.Printf("Receiving User: %v with Status: %v\n", response.GetUser().GetName(), response.GetStatus())
+		}
+		close(wait)
+	}()
+	<-wait
 }
